@@ -78,4 +78,4 @@ setInterval(() => {
 // O jogo possui uma altura fixa (da div)
 // Cada barreira possui uma altura diferente
 // A abertura por enquanto esta ficando fixa!
-// GitHuuub!
+// TESTE 2
