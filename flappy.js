@@ -79,7 +79,7 @@ function Passaro(alturaJogo){
     window.onkeyup = e => voando = false
 
     this.animar = () => {
-        const novoY = this.getY() +(voando ? 10 : -5)
+        const novoY = this.getY() +(voando ? 7 : -5)
         const alturaMaxima = alturaJogo - this.elemento.clientHeight
 
         if(novoY <= 0){
@@ -104,6 +104,30 @@ function Progresso(){
     this.atualizarPontos(0)
 }
 
+function sobrePostos(elementoA, elementoB){
+    const a = elementoA.getBoundingClientRect()
+    const b = elementoB.getBoundingClientRect()
+
+    const horizontal = a.left + a.width >= b.left && b.left + b.width >= a.left
+    const vertical = a.top + a.height >= b.top && b.top + b.height >= a.top
+
+    return horizontal && vertical // retorna true se os dois coliderem
+}
+
+function colidiu(passaro, barreiras){
+    let colidiu = false
+
+    barreiras.pares.forEach(parDeBarreiras => {
+        if(!colidiu){
+            const superior = parDeBarreiras.superior.elemento
+            const inferior = parDeBarreiras.inferior.elemento
+            colidiu = sobrePostos(passaro.elemento, superior) || sobrePostos(passaro.elemento, inferior)
+        }
+    })
+
+    return colidiu
+}
+
 function FlappyBird(){
     let pontos = 0
 
@@ -112,7 +136,7 @@ function FlappyBird(){
     const largura = areaDoJogo.clientWidth
 
     const progresso = new Progresso()
-    const barreiras = new Barreiras(altura, largura, 200, 400,
+    const barreiras = new Barreiras(altura, largura, 250, 400,
         () => progresso.atualizarPontos(++pontos))
     const passaro = new Passaro(altura)
 
@@ -126,6 +150,10 @@ function FlappyBird(){
         const temporizador = setInterval(() => {
             barreiras.animar()
             passaro.animar()
+
+            if(colidiu(passaro, barreiras)){
+                clearInterval(temporizador)
+            }
         }, 20)
     }
 }
